@@ -4,10 +4,12 @@ const {
   GraphQLString,
   GraphQLInt,
   GraphQLSchema,
+  GraphQLList,
+  GraphQLNonNull,
 } = graphql;
 const _ = require('lodash');
 
-const users = [
+let users = [
   {
     id: '1',
     firstName: 'Mike',
@@ -40,16 +42,16 @@ const users = [
   },
 ];
 
-const posts = [
+let posts = [
   {
     id: '1',
     title: 'Title 1',
     description: 'description 1',
     content: 'Content 1',
     date: '11-11-2011',
-    userId: '1',
     city: 'Moscow',
     country: 'Russia',
+    userId: '1',
   },
   {
     id: '2',
@@ -57,9 +59,9 @@ const posts = [
     description: 'description 2',
     content: 'Content 2',
     date: '11-11-2011',
-    userId: '1',
     city: 'Novgorod',
     country: 'Russia',
+    userId: '1',
   },
   {
     id: '3',
@@ -67,45 +69,15 @@ const posts = [
     description: 'description 3',
     content: 'Content 3',
     date: '11-11-2011',
-    userId: '3',
     city: 'Voronezj',
     country: 'Russia',
+    userId: '2',
   },
 ];
 
-const PostType = new GraphQLObjectType({
-  name: 'Post',
-  fields: {
-    id: {
-      type: GraphQLString
-    },
-    title: {
-      type: GraphQLString
-    },
-    description: {
-      type: GraphQLString
-    },
-    date: {
-      type: GraphQLString
-    },
-    content: {
-      type: GraphQLString
-    },
-    userId: {
-      type: GraphQLString
-    },
-    city: {
-      type: GraphQLString
-    },
-    country: {
-      type: GraphQLString
-    },
-  }
-})
-
 const UserType = new GraphQLObjectType({
   name: 'User',
-  fields: {
+  fields: () => ({
     id: {
       type: GraphQLString
     },
@@ -128,11 +100,46 @@ const UserType = new GraphQLObjectType({
       type: GraphQLString
     },
     posts: {
-      type: GraphQLString
+      type: new GraphQLList(PostType),
+      resolve(parentValue, args) {
+        return posts.filter((i) => i.userId === parentValue.id)
+      }
     },
-  }
+  })
 })
 
+const PostType = new GraphQLObjectType({
+  name: 'Post',
+  fields: () => ({
+    id: {
+      type: GraphQLString
+    },
+    title: {
+      type: GraphQLString
+    },
+    description: {
+      type: GraphQLString
+    },
+    date: {
+      type: GraphQLString
+    },
+    content: {
+      type: GraphQLString
+    },
+    user: {
+      type: UserType,
+      resolve(parentValue, args) {
+        return users.find((i) => i.id === parentValue.userId)
+       }
+    },
+    city: {
+      type: GraphQLString
+    },
+    country: {
+      type: GraphQLString
+    },
+  })
+})
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
@@ -154,6 +161,47 @@ const RootQuery = new GraphQLObjectType({
   }
 })
 
+const mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    addUser: {
+      type: UserType,
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        firstName: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        secondName: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        age: {
+          type: new GraphQLNonNull(GraphQLInt)
+        },
+      },
+      resolve(parentValue, { id, firstName, secondName, age }) {
+        const newUser = { id, firstName, secondName, age };
+        users = [ ...users, newUser ];
+        return newUser;
+      }
+    },
+    deleteUser: {
+      type: new GraphQLList(UserType),
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLString)
+        }
+      },
+      resolve(parentValue, { id }) {
+        users = users.filter((i) => i.id !== id);
+        return users;
+      }
+    }
+  }
+})
+
 module.exports = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation,
 });
