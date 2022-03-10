@@ -158,6 +158,12 @@ const RootQuery = new GraphQLObjectType({
         return _.find(posts, { id: args.id });
       }
     },
+    posts: {
+      type: new GraphQLList(PostType),
+      resolve(parentValue, args) {
+        return posts;
+      }
+    },
   }
 })
 
@@ -184,6 +190,40 @@ const mutation = new GraphQLObjectType({
         const newUser = { id, firstName, secondName, age };
         users = [ ...users, newUser ];
         return newUser;
+      }
+    },
+    addPost: {
+      type: new GraphQLList(PostType),
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        title: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        description: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        content: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        date: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        city: {
+          type: GraphQLString
+        },
+        country: {
+          type: GraphQLString
+        },
+        userId: {
+          type: GraphQLString
+        }
+      },
+      resolve(parentValue, { id, title, description, content, date, city, country, userId }) {
+        const newPost = { id, title, description, content, date, city, country, userId };
+        posts = [ ...posts, newPost ];
+        return posts;
       }
     },
     deleteUser: {
