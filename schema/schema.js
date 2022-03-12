@@ -1,4 +1,5 @@
 const graphql = require('graphql');
+const mongoose = require('mongoose');
 const {
   GraphQLObjectType,
   GraphQLString,
@@ -9,6 +10,8 @@ const {
 } = graphql;
 const _ = require('lodash');
 
+const User = mongoose.model('user');
+const Post = mongoose.model('post');
 let users = [
   {
     id: '1',
@@ -126,12 +129,15 @@ const PostType = new GraphQLObjectType({
     content: {
       type: GraphQLString
     },
-    user: {
-      type: UserType,
-      resolve(parentValue, args) {
-        return users.find((i) => i.id === parentValue.userId)
-       }
+    userId: {
+      type: GraphQLString
     },
+    //user: {
+    //  type: UserType,
+    //  resolve(parentValue, args) {
+    //    return users.find((i) => i.id === parentValue.userId)
+    //   }
+    //},
     city: {
       type: GraphQLString
     },
@@ -151,6 +157,16 @@ const RootQuery = new GraphQLObjectType({
         return _.find(users, { id: args.id });
       }
     },
+    users: {
+      type: new GraphQLList(UserType),
+      resolve() {
+        return User.find({})
+          .then((items) => {
+            console.log(items);
+            return items;
+          })
+      }
+    },
     post: {
       type: PostType,
       args: { id: { type: GraphQLString } },
@@ -160,8 +176,12 @@ const RootQuery = new GraphQLObjectType({
     },
     posts: {
       type: new GraphQLList(PostType),
-      resolve(parentValue, args) {
-        return posts;
+      resolve() {
+        return Post.find({})
+          .then((items) => {
+            console.log(items);
+            return items;
+          })
       }
     },
   }
@@ -173,9 +193,6 @@ const mutation = new GraphQLObjectType({
     addUser: {
       type: UserType,
       args: {
-        id: {
-          type: new GraphQLNonNull(GraphQLString)
-        },
         firstName: {
           type: new GraphQLNonNull(GraphQLString)
         },
@@ -185,19 +202,28 @@ const mutation = new GraphQLObjectType({
         age: {
           type: new GraphQLNonNull(GraphQLInt)
         },
+        occupation: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        city: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        country: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
       },
-      resolve(parentValue, { id, firstName, secondName, age }) {
-        const newUser = { id, firstName, secondName, age };
-        users = [ ...users, newUser ];
-        return newUser;
+      resolve(parentValue, { firstName, secondName, occupation, age, city, country }) {
+        const newUser = { firstName, secondName, occupation, age, city, country };
+        return User.create(newUser)
+          .then((item) => {
+            console.log(item);
+            return item;
+          })
       }
     },
     addPost: {
-      type: new GraphQLList(PostType),
+      type: PostType,
       args: {
-        id: {
-          type: new GraphQLNonNull(GraphQLString)
-        },
         title: {
           type: new GraphQLNonNull(GraphQLString)
         },
@@ -217,13 +243,16 @@ const mutation = new GraphQLObjectType({
           type: GraphQLString
         },
         userId: {
-          type: GraphQLString
+          type: new GraphQLNonNull(GraphQLString)
         }
       },
-      resolve(parentValue, { id, title, description, content, date, city, country, userId }) {
-        const newPost = { id, title, description, content, date, city, country, userId };
-        posts = [ ...posts, newPost ];
-        return posts;
+      resolve(parentValue, { title, description, content, date, city, country, userId }) {
+        const newPost = { title, description, content, date, city, country, userId };
+        return Post.create(newPost)
+          .then((item) => {
+            console.log(item);
+            return item;
+          })
       }
     },
     deleteUser: {
