@@ -77,6 +77,7 @@ const updateUser = {
     occupation: { type: GraphQLString },
     city: { type: GraphQLString },
     country: { type: GraphQLString },
+    post: { type: new GraphQLList(GraphQLID) }
   },
   async resolve(__, { id, ...args }) {
     await User.updateUser(id, args);

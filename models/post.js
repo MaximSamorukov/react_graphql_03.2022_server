@@ -8,15 +8,12 @@ const PostSchema = new Schema({
   content: { type: String },
   city: { type: String },
   country: { type: String },
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'user'
-  }
+  user: { type: Schema.Types.ObjectId }
 });
 
-PostSchema.statics.addPost = function({ title, description, content, date, city, country, userId }) {
+PostSchema.statics.addPost = function({ title, description, content, date, city, country }) {
   const Post = mongoose.model('post');
-  return Post.save({ title, description, content, date, city, country, userId })
+  return Post.save({ title, description, content, date, city, country })
     .then(post => {
       return post;
     });

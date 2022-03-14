@@ -21,7 +21,7 @@ const addPost = {
     date: { type: new GraphQLNonNull(GraphQLString) },
     city: { type: new GraphQLNonNull(GraphQLString) },
     country: { type: new GraphQLNonNull(GraphQLString) },
-    userId: { type: new GraphQLNonNull(GraphQLID) }
+    // userId: { type: new GraphQLNonNull(GraphQLID) }
   },
   resolve(__, { title, description, content, date, city, country, userId }) {
     const newPost = { title, description, content, date, city, country, userId };
@@ -50,7 +50,7 @@ const updatePost = {
     date: { type: GraphQLString },
     city: { type: GraphQLString },
     country: { type: GraphQLString },
-    userId: { type: GraphQLID }
+    user: { type: GraphQLID }
   },
   async resolve(__, { id, ...args }) {
     await Post.updatePost(id, args);

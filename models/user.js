@@ -9,10 +9,7 @@ const UserSchema = new Schema({
   age: { type: Number },
   city: { type: String },
   country: { type: String },
-  posts: [{
-    type: Schema.Types.ObjectId,
-    ref: 'post'
-  }]
+  posts: [{ type: Schema.Types.ObjectId }]
 });
 
 UserSchema.statics.addUser = function({ firstName, secondName, occupation, age, city, country }) {
