@@ -16,43 +16,30 @@ const Post = mongoose.model('post');
 const user = {
   type: UserType,
   args: { id: { type: GraphQLID } },
-  resolve(parentValue, args) {
-    return User.findById(args.id)
-      .then((item) => {
-        return item;
-      })
+  resolve(parentValue, { id }) {
+    return User.findById(id).then((item) => item)
   }
 };
 
 const users = {
   type: new GraphQLList(UserType),
   resolve() {
-    return User.find({})
-      .then((items) => {
-        console.log(items);
-        return items;
-      })
+    return User.find({}).then((items) => items)
   }
 };
 
 const post = {
   type: PostType,
   args: { id: { type: GraphQLID } },
-  resolve(parentValue, args) {
-    return Post.find({ id: args.id })
-      .then((item) => {
-        return item;
-      })
+  resolve(parentValue, { id }) {
+    return Post.findById(id).then((item) => item)
   }
 };
 
 const posts = {
   type: new GraphQLList(PostType),
   resolve() {
-    return Post.find({})
-      .then((items) => {
-        return items;
-      })
+    return Post.find({}).then((items) => items)
   }
 };
 

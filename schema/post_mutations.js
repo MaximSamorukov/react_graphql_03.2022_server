@@ -11,6 +11,7 @@ const {
 } = graphql;
 const { PostType } = require('./types');
 const Post = mongoose.model('post');
+const User = mongoose.model('user');
 
 const addPost = {
   type: PostType,
@@ -21,11 +22,16 @@ const addPost = {
     date: { type: new GraphQLNonNull(GraphQLString) },
     city: { type: new GraphQLNonNull(GraphQLString) },
     country: { type: new GraphQLNonNull(GraphQLString) },
-    // userId: { type: new GraphQLNonNull(GraphQLID) }
+    userId: { type: new GraphQLNonNull(GraphQLString) }
   },
-  resolve(__, { title, description, content, date, city, country, userId }) {
-    const newPost = { title, description, content, date, city, country, userId };
-    return new Post(newPost).save();
+  async resolve(__, { title, description, content, date, city, country, userId }) {
+    const newPost = { title, description, content, date, city, country, user: userId };
+    const newPostFromDB = await new Post(newPost).save();
+    const newPostFromDBID = newPostFromDB.id;
+    const user = await User.findById(userId);
+    const userPosts = user.posts;
+    await User.findByIdAndUpdate(userId, { posts: [newPostFromDBID, ...userPosts]})
+    return newPostFromDB;
   }
 };
 
@@ -34,8 +40,13 @@ const deletePost = {
   args: {
     id: { type: new GraphQLNonNull(GraphQLID) }
   },
-  async resolve(__, { id }) {
-    const post = await Post.deletePost(id);
+  async resolve(parentValue, { id }) {
+    const post = await Post.findByIdAndDelete(id);
+    const userId = post.user;
+    const user = await User.findById(userId);
+    const userPosts = user.posts;
+    const filteredUserPosts = userPosts.filter((i) => i !== id);
+    await User.findByIdAndUpdate(userId, { posts: filteredUserPosts })
     return post;
   }
 };
@@ -50,7 +61,7 @@ const updatePost = {
     date: { type: GraphQLString },
     city: { type: GraphQLString },
     country: { type: GraphQLString },
-    user: { type: GraphQLID }
+    user: { type: GraphQLString }
   },
   async resolve(__, { id, ...args }) {
     await Post.updatePost(id, args);

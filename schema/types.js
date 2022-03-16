@@ -25,7 +25,7 @@ const UserType = new GraphQLObjectType({
     country: { type: GraphQLString },
     posts: {
       type: new GraphQLList(PostType),
-      resolve(parentValue, args) {
+      resolve(parentValue) {
         return Post.find({ user: parentValue.id })
       }
     },
@@ -42,7 +42,7 @@ const PostType = new GraphQLObjectType({
     content: { type: GraphQLString },
     user: {
       type: UserType,
-      resolve(parentValue, args) {
+      resolve(parentValue) {
         return User.findById(parentValue.user)
       }
     },

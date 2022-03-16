@@ -9,7 +9,7 @@ const UserSchema = new Schema({
   age: { type: Number },
   city: { type: String },
   country: { type: String },
-  posts: [{ type: Schema.Types.ObjectId }]
+  posts: [{ type: String }]
 });
 
 UserSchema.statics.addUser = function({ firstName, secondName, occupation, age, city, country }) {
@@ -21,28 +21,28 @@ UserSchema.statics.addUser = function({ firstName, secondName, occupation, age, 
     });
 }
 
-UserSchema.statics.addPostToUser = function({ id, title, description, date, content, city, country }) {
-  const Post = mongoose.model('post');
+//UserSchema.statics.addPostToUser = function({ id, title, description, date, content, city, country }) {
+//  const Post = mongoose.model('post');
 
-  return this.findById(id)
-    .then((user) => {
-      const post = new Post({title, description, date, content, city, country});
-      user.posts.push(post)
-      return Promise.all([user.save(), post.save()])
-        .then(([user, post]) => user);
-    })
-}
+//  return this.findById(id)
+//    .then((user) => {
+//      const post = new Post({title, description, date, content, city, country});
+//      user.posts.push(post)
+//      return Promise.all([user.save(), post.save()])
+//        .then(([user, post]) => user);
+//    })
+//}
 
-UserSchema.statics.deletePostFromUser = function({ userId, postId }) {
-  const Post = mongoose.model('post');
-  return this.findById(userId)
-  .then((user) => {
-    console.log(user.posts)
+//UserSchema.statics.deletePostFromUser = function({ userId, postId }) {
+//  const Post = mongoose.model('post');
+//  return this.findById(userId)
+//  .then((user) => {
+//    console.log(user.posts)
 
-    //return Promise.all([user.save(), post.save()])
-    //  .then(([user, post]) => user);
-  })
-}
+//    return Promise.all([user.save(), post.save()])
+//      .then(([user, post]) => user);
+//  })
+//}
 
 UserSchema.statics.deleteUser = async function(userId) {
   const User = mongoose.model('user');
