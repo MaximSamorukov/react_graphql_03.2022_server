@@ -29,40 +29,15 @@ const addUser = {
   }
 };
 
-const addPostToUser = {
-  type: UserType,
-  args: {
-    title: { type: new GraphQLNonNull(GraphQLString) },
-    description: { type: new GraphQLNonNull(GraphQLString) },
-    content: { type: new GraphQLNonNull(GraphQLString) },
-    date: { type: new GraphQLNonNull(GraphQLString) },
-    city: { type: GraphQLString },
-    country: { type: GraphQLString },
-    userId: { type: new GraphQLNonNull(GraphQLID) }
-  },
-  resolve(__, { title, description, content, date, city, country, userId }) {
-    return User.addPostToUser({ title, description, content, date, city, country, id: userId })
-  }
-};
-
-const deletePostFromUser = {
-  type: UserType,
-  args: {
-    postId: { type: new GraphQLNonNull(GraphQLID) },
-    userId: { type: new GraphQLNonNull(GraphQLID) }
-  },
-  resolve(__, { postId, userId }) {
-    return User.deletePostFromUser({ postId, userId })
-  }
-};
-
 const deleteUser = {
   type: UserType,
   args: {
     id: { type: new GraphQLNonNull(GraphQLID) }
   },
   async resolve(__, { id }) {
-    const user = await User.deleteUser(id);
+    const user = await User.findByIdAndRemove(id);
+    const { posts } = user;
+    posts.map(async(id) => await Post.findByIdAndRemove(id))
     return user;
   }
 };
@@ -80,16 +55,13 @@ const updateUser = {
     post: { type: new GraphQLList(GraphQLID) }
   },
   async resolve(__, { id, ...args }) {
-    await User.updateUser(id, args);
-    const user = await User.findById(id);
-    return user;
+    await User.findByIdAndUpdate(id, args);
+    return User.findById(id);
   }
 };
 
 module.exports = {
   addUser,
-  addPostToUser,
-  deletePostFromUser,
   deleteUser,
   updateUser,
 }

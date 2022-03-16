@@ -6,8 +6,6 @@ const {
 
 const {
   addUser,
-  addPostToUser,
-  deletePostFromUser,
   deleteUser,
   updateUser,
 } = require('./user_mutations');
@@ -36,8 +34,6 @@ const mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
     addUser,
-    addPostToUser,
-    deletePostFromUser,
     deleteUser,
     updateUser,
     addPost,

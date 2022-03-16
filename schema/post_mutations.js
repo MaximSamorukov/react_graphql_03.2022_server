@@ -64,9 +64,8 @@ const updatePost = {
     user: { type: GraphQLString }
   },
   async resolve(__, { id, ...args }) {
-    await Post.updatePost(id, args);
-    const post = await Post.findById(id);
-    return post;
+    await Post.findByIdAndUpdate(id, args);
+    return Post.findById(id);
   }
 };
 
