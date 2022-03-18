@@ -9,6 +9,7 @@ const {
   GraphQLNonNull,
   GraphQLID,
 } = graphql;
+const { GraphQLDateTime } = require('graphql-iso-date');
 
 const User = mongoose.model('user');
 const Post = mongoose.model('post');
@@ -23,6 +24,7 @@ const UserType = new GraphQLObjectType({
     age: { type: GraphQLInt },
     city: { type: GraphQLString },
     country: { type: GraphQLString },
+    created: { type: GraphQLDateTime },
     posts: {
       type: new GraphQLList(PostType),
       resolve(parentValue) {
@@ -48,6 +50,7 @@ const PostType = new GraphQLObjectType({
     },
     city: { type: GraphQLString },
     country: { type: GraphQLString },
+    created: { type: GraphQLDateTime },
   })
 });
 

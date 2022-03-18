@@ -9,6 +9,7 @@ const UserSchema = new Schema({
   age: { type: Number },
   city: { type: String },
   country: { type: String },
+  created: { type: Date },
   posts: [{ type: String }]
 });
 

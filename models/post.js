@@ -8,7 +8,8 @@ const PostSchema = new Schema({
   content: { type: String },
   city: { type: String },
   country: { type: String },
-  user: { type: String }
+  user: { type: String },
+  created: { type: Date },
 });
 
 PostSchema.statics.addPost = function({ title, description, content, date, city, country }) {
