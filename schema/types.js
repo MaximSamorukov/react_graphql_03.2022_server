@@ -28,7 +28,7 @@ const UserType = new GraphQLObjectType({
     posts: {
       type: new GraphQLList(PostType),
       resolve(parentValue) {
-        return Post.find({ user: parentValue.id })
+        return Post.find({ user: parentValue.id }).sort({ "created": 'desc' })
       }
     },
   })

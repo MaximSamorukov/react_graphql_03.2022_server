@@ -23,8 +23,13 @@ const user = {
 
 const users = {
   type: new GraphQLList(UserType),
-  resolve() {
-    return User.find({}).then((items) => items)
+  args: {
+    field: { type: GraphQLString },
+    sortDirection: { type: GraphQLString }
+  },
+  resolve(_, args) {
+    const { sortDirection, field } = args;
+    return User.find({}).sort({ [field]: sortDirection }).then((items) => items)
   }
 };
 
@@ -38,8 +43,13 @@ const post = {
 
 const posts = {
   type: new GraphQLList(PostType),
-  resolve() {
-    return Post.find({}).then((items) => items)
+  args: {
+    field: { type: GraphQLString },
+    sortDirection: { type: GraphQLString }
+  },
+  resolve(_, args) {
+    const { sortDirection, field } = args;
+    return Post.find({}).sort({ [field]: sortDirection }).then((items) => items)
   }
 };
 
