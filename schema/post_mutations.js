@@ -25,7 +25,7 @@ const addPost = {
     userId: { type: new GraphQLNonNull(GraphQLString) }
   },
   async resolve(__, { title, description, content, date, city, country, userId }) {
-    const newPost = { title, description, content, date, city, country, user: userId };
+    const newPost = { title, description, content, date, city, country, user: userId, created: new Date() };
     const newPostFromDB = await new Post(newPost).save();
     const newPostFromDBID = newPostFromDB.id;
     const user = await User.findById(userId);

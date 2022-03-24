@@ -24,7 +24,7 @@ const addUser = {
     country: { type: new GraphQLNonNull(GraphQLString) },
   },
   resolve(parentValue, { firstName, secondName, occupation, age, city, country }) {
-    const newUser = { firstName, secondName, occupation, age, city, country };
+    const newUser = { firstName, secondName, occupation, age, city, country, created: new Date() };
     return new User(newUser).save();
   }
 };

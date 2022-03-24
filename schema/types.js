@@ -42,6 +42,7 @@ const PostType = new GraphQLObjectType({
     description: { type: GraphQLString },
     date: { type: GraphQLString },
     content: { type: GraphQLString },
+    created: { type: GraphQLDateTime },
     user: {
       type: UserType,
       resolve(parentValue) {
