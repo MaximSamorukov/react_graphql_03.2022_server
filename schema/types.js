@@ -27,8 +27,13 @@ const UserType = new GraphQLObjectType({
     created: { type: GraphQLDateTime },
     posts: {
       type: new GraphQLList(PostType),
-      resolve(parentValue) {
-        return Post.find({ user: parentValue.id }).sort({ "created": 'desc' })
+      args: {
+        sortDirection: { type: GraphQLString },
+        field: { type: GraphQLString },
+      },
+      resolve(parentValue, args) {
+        const { sortDirection, field } = args;
+        return Post.find({ user: parentValue.id }).sort({ [field]: sortDirection })
       }
     },
   })

@@ -15,8 +15,12 @@ const Post = mongoose.model('post');
 
 const user = {
   type: UserType,
-  args: { id: { type: GraphQLID } },
-  resolve(parentValue, { id }) {
+  args: {
+    id: { type: GraphQLID },
+    field: { type: GraphQLString },
+    sortDirection: { type: GraphQLString }
+  },
+  resolve(parentValue, { id, }) {
     return User.findById(id).then((item) => item)
   }
 };
